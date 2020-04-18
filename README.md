@@ -1,6 +1,7 @@
 ![Sticky pool logo](logo.png)
 
 Sticky Worker Pool
+==================
 
 Создадим исполнителя
 
