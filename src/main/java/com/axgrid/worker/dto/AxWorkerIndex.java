@@ -7,25 +7,41 @@ import lombok.Data;
  * Ротационная запись задачи
  */
 @Data
-@AllArgsConstructor
 public class AxWorkerIndex {
     /**
      * Слаг задачи
      */
-    String workerSlug;
+    final String slug;
 
     /**
      * Индекс группы внутри задачи
      * Выбрать из списка можно например как
-     * Utils.crc32(session) % configuration.workerCount == workerIndex
+     * Utils.crc32(session) % getCount() == getIndex()
      */
-    int workerIndex;
+    final int index;
+
+    /**
+     * Количество воркеров
+     * @return число
+     */
+    public long getCount() { return configuration.getCount(); }
 
     /**
      * конфигурация
      */
-    AxWorkerConfiguration configuration;
+    final AxWorkerConfiguration configuration;
+
+    private final String key;
 
     @Override
-    public String toString() { return workerSlug+"-"+workerIndex; }
+    public String toString() { return key; }
+
+    public AxWorkerIndex(String slug, int index, AxWorkerConfiguration configuration) {
+        this.slug = slug;
+        this.index = index;
+        this.configuration = configuration;
+        this.key = slug +"-"+ index;
+    }
+
+
 }

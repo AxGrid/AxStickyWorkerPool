@@ -35,7 +35,7 @@ public class TestWorkService implements AxWork {
 
     @Override
     public void execute(AxWorkerIndex workerIndex) throws InterruptedException {
-        tasks.keySet().stream().filter((key) -> key.startsWith(workerIndex.getWorkerSlug()) && (Utils.crc32(key) % workerIndex.getConfiguration().getCount() == workerIndex.getWorkerIndex()))
+        tasks.keySet().stream().filter((key) -> key.startsWith(workerIndex.getSlug()) && (Utils.crc32(key) % workerIndex.getConfiguration().getCount() == workerIndex.getIndex()))
                 .forEach(key -> {
                     if (tasks.get(key) != null && tasks.get(key).size() > 0) {
                         workedOn.compute(key, (k,v) -> {

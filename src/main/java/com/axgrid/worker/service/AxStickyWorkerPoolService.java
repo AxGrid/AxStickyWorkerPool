@@ -39,7 +39,7 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
                         break;
                     }
                     currentWork = parent.workerIndexBlockingQueue.take();
-                    if (parent.errors.getErrorCount(currentWork.getWorkerSlug(), currentWork.getConfiguration().getDisableTaskTimeout()) <= currentWork.getConfiguration().getDisableTaskAtErrorsCount()) {
+                    if (parent.errors.getErrorCount(currentWork.getSlug(), currentWork.getConfiguration().getDisableTaskTimeout()) <= currentWork.getConfiguration().getDisableTaskAtErrorsCount()) {
                         parent.work.execute(currentWork);
                     }
                 }catch (InterruptedException ignore) {
@@ -47,7 +47,7 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
                 }catch (Exception e) {
                     if (log.isWarnEnabled()) log.warn("Exception in worker", e);
                     if (currentWork != null) {
-                        parent.errors.put(currentWork.getWorkerSlug());
+                        parent.errors.put(currentWork.getSlug());
                     }
                 }
 
