@@ -1,4 +1,4 @@
-(logo.png)
+![Sticky pool logo](logo.png)
 
 Sticky Worker Pool
 
