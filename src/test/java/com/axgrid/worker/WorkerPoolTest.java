@@ -115,7 +115,7 @@ public class WorkerPoolTest {
 
         // Проделаем все для второй настройки
         List<String> sessionsW2 = IntStream.range(0,20).boxed().map(item -> UUID.randomUUID().toString()).collect(Collectors.toList());
-        int w2Count = 4000;
+        int w2Count = 40;
         for(int i=0;i<w2Count;i++) {
             String session = "w3-" + sessionsW2.get(i % sessionsW2.size());
             Queue<Integer> sessionTask = tasks.getOrDefault(session, new PriorityQueue<>());

@@ -39,6 +39,9 @@ public class TestWorkService implements AxWork {
                 .forEach(key -> {
                     if (workerIndex.getSlug().startsWith("w3") && throwW3Error) {
                         log.info("Worker error!");
+                        try {
+                            Thread.sleep(100);
+                        }catch (InterruptedException ignore) {}
                         throw new RuntimeException("Worker Exception");
                     }
                     if (tasks.get(key) != null && tasks.get(key).size() > 0) {
