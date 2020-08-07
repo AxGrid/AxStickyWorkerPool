@@ -21,8 +21,6 @@ public class TestWorkService implements AxWork {
     @Getter
     Map<String, Integer> result = new ConcurrentHashMap<>();
 
-
-
     @Getter
     Map<String, Set<String>> workedOn = new ConcurrentHashMap<>();
 
@@ -33,10 +31,16 @@ public class TestWorkService implements AxWork {
 
     final Random r = new Random(new Date().getTime());
 
+    public static boolean throwW3Error = true;
+
     @Override
     public void execute(AxWorkerIndex workerIndex) throws InterruptedException {
         tasks.keySet().stream().filter((key) -> key.startsWith(workerIndex.getSlug()) && (Utils.crc32(key) % workerIndex.getConfiguration().getCount() == workerIndex.getIndex()))
                 .forEach(key -> {
+                    if (workerIndex.getSlug().startsWith("w3") && throwW3Error) {
+                        log.info("Worker error!");
+                        throw new RuntimeException("Worker Exception");
+                    }
                     if (tasks.get(key) != null && tasks.get(key).size() > 0) {
                         workedOn.compute(key, (k,v) -> {
                                 if (v == null)
@@ -46,7 +50,6 @@ public class TestWorkService implements AxWork {
                                     return v;
                                 }
                         });
-
                         workedOn.getOrDefault(key, new HashSet<>()).add(workerIndex.toString());
                         Integer t = tasks.get(key).poll();
                         if (t == null) { log.warn("Value for key {} is null", key); return; }
