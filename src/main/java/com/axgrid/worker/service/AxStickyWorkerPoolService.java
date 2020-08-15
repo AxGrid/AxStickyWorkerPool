@@ -9,13 +9,8 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -36,6 +31,7 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
         public void run() {
             while(parent.enable) {
                 AxWorkerIndex currentWork = null;
+                long startTime = new Date().getTime();
                 try {
                     if (parent.configurations != null) {
                         if (log.isDebugEnabled()) log.debug("Stop worker {} for reconfiguring...", index);
@@ -61,6 +57,14 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
                         break;
                     }
                 }
+                long totalTime = new Date().getTime() - startTime;
+                if (totalTime >= 5000) {
+                    if (currentWork != null)
+                        log.warn("Worker {}/{}/{} time over 5000ms.", currentWork.getSlug(), currentWork.getKey(), currentWork.getIndex());
+                    else
+                        log.warn("Worker NULL time over 5000ms.");
+                }
+
             }
             runningWorkers.decrementAndGet();
         }
@@ -72,6 +76,7 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
 
 
     }
+
 
     /**
      * Имя пула

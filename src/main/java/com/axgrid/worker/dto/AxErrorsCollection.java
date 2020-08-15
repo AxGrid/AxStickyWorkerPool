@@ -45,6 +45,7 @@ public class AxErrorsCollection extends ConcurrentHashMap<String, List<Long>> {
         if (errorsTimes == null) return 0;
         errorsTimes = new ArrayList<>(errorsTimes);
         long currentTime = new Date().getTime();
+        errorsTimes.removeIf(item -> item < (currentTime - timeInterval));
         return (int)errorsTimes.stream().filter(item -> item > currentTime - timeInterval).mapToLong(item -> item).count();
     }
 
