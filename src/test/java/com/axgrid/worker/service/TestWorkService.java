@@ -27,7 +27,13 @@ public class TestWorkService implements AxWork {
     // Типа задачи
     @Getter
     Map<String, Queue<Integer>> tasks = new ConcurrentHashMap<>();
+
     public boolean isEmpty() { return tasks.values().stream().allMatch(item->item.size() == 0); }
+
+    public void clear() {
+        workedOn.clear();
+        result.clear();
+    }
 
     final Random r = new Random(new Date().getTime());
 

@@ -9,12 +9,15 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Сервис организации пула исполнения задач
@@ -104,6 +107,7 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
 
     boolean enable = false;
 
+
     /**
      * Флаг изменения конфигурации
      */
@@ -112,6 +116,12 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
     public int getWorkerCount() {
         return this.runningWorkers.get();
     }
+
+    public List<AxWorkerIndex> getWorkerQueue() {
+        return new ArrayList<>(workerIndexBlockingQueue);
+    }
+
+    public AxErrorsCollection getErrorsCollection() { return errors; }
 
     /**
      * Создает воркеры
