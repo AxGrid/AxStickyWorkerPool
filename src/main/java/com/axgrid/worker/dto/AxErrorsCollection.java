@@ -29,6 +29,9 @@ public class AxErrorsCollection extends ConcurrentHashMap<String, List<Long>> {
                 long d = new Date().getTime();
                 v.add(new Date().getTime());
                 v.removeIf(i -> i < d - storeTime);
+                while (v.size() > 1000) {
+                    v.remove(0);
+                }
                 return v;
             }
         });
