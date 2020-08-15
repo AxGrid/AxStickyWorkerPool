@@ -113,8 +113,12 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
      */
     Map<String, AxWorkerConfiguration> configurations;
 
-    public int getWorkerCount() {
+    public int getRunningWorkerCount() {
         return this.runningWorkers.get();
+    }
+
+    public int getWorkerCount() {
+        return this.workerCount;
     }
 
     public List<AxWorkerIndex> getWorkerQueue() {
