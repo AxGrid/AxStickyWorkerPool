@@ -27,10 +27,13 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
         final AxStickyWorkerPoolService parent;
         final int index;
 
+
+
         @Override
         public void run() {
             while(parent.enable) {
                 AxWorkerIndex currentWork = null;
+                processWorkers.incrementAndGet();
                 long startTime = new Date().getTime();
                 try {
                     if (parent.configurations != null) {
@@ -48,6 +51,8 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
                     if (currentWork != null) {
                         parent.errors.put(currentWork.getSlug());
                     }
+                } finally {
+                    processWorkers.decrementAndGet();
                 }
 
                 if (currentWork != null) {
@@ -87,6 +92,8 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
      * Количество запущенных воркеров
      */
     final AtomicInteger runningWorkers = new AtomicInteger();
+
+    final AtomicInteger processWorkers = new AtomicInteger();
 
     /**
      * Коллекция ошибок
@@ -137,9 +144,14 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
      */
     private void startWorkers() {
         this.enable = true;
-        for(int i=0;i<workerCount;i++) {
-            Worker w = new Worker(runningWorkers.getAndIncrement(), this);
-            executorService.execute(w);
+        while(this.runningWorkers.get() < workerCount)
+        {
+            try {
+                Worker w = new Worker(runningWorkers.getAndIncrement(), this);
+                executorService.execute(w);
+            }catch (Exception e) {
+                if (log.isErrorEnabled()) log.error("Start worker exception", e);
+            }
         }
     }
 
@@ -169,6 +181,10 @@ public abstract class AxStickyWorkerPoolService implements HealthIndicator {
         }
         this.configurations = null;
         startWorkers();
+        if (this.runningWorkers.get() != workerCount) {
+            startWorkers();
+            if (log.isWarnEnabled()) log.warn("Restart worker pool");
+        }
     }
 
     /**

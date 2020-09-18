@@ -43,7 +43,7 @@ public class TestWorkService implements AxWork {
     public void execute(AxWorkerIndex workerIndex) throws InterruptedException {
         tasks.keySet().stream().filter((key) -> key.startsWith(workerIndex.getSlug()) && (Utils.crc32(key) % workerIndex.getConfiguration().getCount() == workerIndex.getIndex()))
                 .forEach(key -> {
-                    if (workerIndex.getSlug().startsWith("w3") && throwW3Error) {
+                    if ((workerIndex.getSlug().startsWith("w3") || workerIndex.getSlug().startsWith("w4"))  && throwW3Error) {
                         log.info("Worker error!");
                         try {
                             Thread.sleep(100);

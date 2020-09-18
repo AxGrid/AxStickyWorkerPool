@@ -105,6 +105,18 @@ public class WorkerPoolTest {
         TestWorkService.throwW3Error = true;
 
         Map<String, Queue<Integer>> tasks = ws.getTasks();
+
+
+        // Проделаем все для второй настройки
+        List<String> sessionsW2 = IntStream.range(0,20).boxed().map(item -> UUID.randomUUID().toString()).collect(Collectors.toList());
+        int w2Count = 500;
+        for(int i=0;i<w2Count;i++) {
+            String session = "w3-" + sessionsW2.get(i % sessionsW2.size());
+            Queue<Integer> sessionTask = tasks.getOrDefault(session, new PriorityQueue<>());
+            sessionTask.add(1);
+            tasks.put(session, sessionTask);
+        }
+
         List<String> sessionsW1 = IntStream.range(0,10).boxed().map(item -> UUID.randomUUID().toString()).collect(Collectors.toList());
         int w1Count = 1500;
         // Создадим задачи пользователей
@@ -115,22 +127,12 @@ public class WorkerPoolTest {
             tasks.put(session, sessionTask);
         }
 
-        // Проделаем все для второй настройки
-        List<String> sessionsW2 = IntStream.range(0,20).boxed().map(item -> UUID.randomUUID().toString()).collect(Collectors.toList());
-        int w2Count = 35;
-        for(int i=0;i<w2Count;i++) {
-            String session = "w3-" + sessionsW2.get(i % sessionsW2.size());
-            Queue<Integer> sessionTask = tasks.getOrDefault(session, new PriorityQueue<>());
-            sessionTask.add(1);
-            tasks.put(session, sessionTask);
-        }
-
         for(int i=0;i<1000;i++) {
             Thread.sleep(10);
             if (ws.isEmpty()) break;
         }
 
-        log.info("{} {}", sessionsW1.size(), ws.getWorkedOn().size());
+        log.info("T1:{} {}", sessionsW1.size(), ws.getWorkedOn().size());
         // Количество совпадает с пользователями
         Assert.assertEquals(sessionsW1.size(), ws.getWorkedOn().size());
         // Количество результатов верное
@@ -142,6 +144,9 @@ public class WorkerPoolTest {
                 .mapToInt(Map.Entry::getValue)
                 .sum()
         );
+
+
+
         Assert.assertFalse(ws.isEmpty());
         TestWorkService.throwW3Error = false;
 

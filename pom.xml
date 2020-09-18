@@ -6,7 +6,7 @@
 
     <groupId>com.axgrid.worker</groupId>
     <artifactId>AxStickyWorkerPool</artifactId>
-    <version>1.7</version>
+    <version>1.8</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
